@@ -139,7 +139,7 @@ public class NeedleControl : MonoBehaviour
         {
             // play alarming sound
             // frequency increases as you get closer to red
-            soundDelay = 0.5f - .25f * (1 - (float)distFac);
+            soundDelay = 0.5f - .25f * ((float)distFac - .5f);
             soundDelay /= 2;
             pitch = 0.5f / 0.3f * distFac + (0.5f - 0.35f / 0.3f);
             alarmSound(pitch);
