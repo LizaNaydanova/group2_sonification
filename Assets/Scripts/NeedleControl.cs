@@ -122,7 +122,7 @@ public class NeedleControl : MonoBehaviour
         if (distFac < 0.65)
         {
             // play bell 
-            // frequency increases as you get closer to red
+            // frequency decreases as you get closer to the target
             soundDelay = 0.5f - .25f * (1 - (float)distFac);
             pitch = -0.5f / 0.7f * distFac + 1;
             bellSound(pitch);
