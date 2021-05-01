@@ -16,7 +16,7 @@ We have two branches in this repository, which contain the two sonification impl
 **General set-up:** Assume corneal injection has occurred and needle is being prepared for insertion 
 **Unity scene:** End of needle in front of retinal layer, starts in correct position, and alerts surgeons if it moves from that position 
 
-For more information about the implementation, see the “preinjection_rotation” branch: https://github.com/LizaNaydanova/group2_sonification/blob/preinjection_rotation/README.md
+For more information about the implementation, see the “preinjection_rotation” branch: https://github.com/LizaNaydanova/group2_sonification/tree/preinjection_rotation
 ## Subretinal Injection (Depth Sonification)
 **Goal:** Guide the surgeons using sound to the correct injection depth in the retina
 **General set-up:** Assume needle has been correctly inserted into the cornea and has the correct alignment  
