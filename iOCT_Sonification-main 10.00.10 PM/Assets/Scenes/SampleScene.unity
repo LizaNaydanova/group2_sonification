@@ -158,8 +158,6 @@ MonoBehaviour:
   mainCamera: {fileID: 963194227}
   sideCamera: {fileID: 860243547}
   customPivot: {fileID: 664300570}
-  soundBitty: {fileID: 114023384}
-  dingBitty: {fileID: 1540134086}
 --- !u!114 &114023380
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -725,7 +723,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 860243545}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &860243547
 Camera:
   m_ObjectHideFlags: 0
@@ -808,7 +806,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!20 &963194227
 Camera:
   m_ObjectHideFlags: 0

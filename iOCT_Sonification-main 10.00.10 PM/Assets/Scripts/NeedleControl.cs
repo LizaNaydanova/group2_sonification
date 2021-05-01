@@ -6,17 +6,14 @@ using UnityEngine.InputSystem;
 public class NeedleControl : MonoBehaviour
 {
 
-    float speed = 0.8f;
-    float pitchVal = 0.5f;
-    Quaternion rotation;
-    Quaternion needleCenter;
-    public Camera mainCamera;
+    float speed = 0.8f; // speed of the needle movement 
+    Quaternion rotation; // rotation of needle
+    Quaternion needleCenter; // correct needle center position 
+    public Camera mainCamera; // front camera looking directly at the retina
     public Camera sideCamera;
-    public Transform customPivot;
-    public AudioSource soundBitty;
-    public AudioSource dingBitty;
-    private float currTime;
-    private float maxTime;
+    public Transform customPivot; // pivot that the needle rotates around
+    private float currTime; // time passed (sec)
+    private float maxTime; // max amount of time that can pass before updating rotation
 
 
     // Start is called before the first frame update
@@ -24,34 +21,38 @@ public class NeedleControl : MonoBehaviour
     {
         mainCamera.enabled = true;
 	sideCamera.enabled = false;
-        soundBitty = GetComponent<AudioSource>();
-        soundBitty.pitch = pitchVal;
-	dingBitty = GetComponent<AudioSource>();
-	needleCenter = this.transform.rotation;
-	currTime = 0;
-	maxTime = 0.5f; // time in sec
+	needleCenter = this.transform.rotation; // update needle center 
+	currTime = 0; // start time
+	maxTime = 0.5f; // update max time 
      }
 
     // Update is called once per frame
     void Update()
     {
+	mainCamera.enabled = true;
+        rotation = this.transform.rotation; // update current rotation each time 
+	
 
-        rotation = this.transform.rotation;
-        //prevPos = this.transform.position;
+        // change camera
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            SwitchCamera();
+        }
+
+	// Up and Down Arrow keys move the needle in and out of the retina 
 
         if (Input.GetKey(KeyCode.UpArrow))
         {
             transform.position += transform.forward * Time.deltaTime * speed;
-            //transform.Translate(0, Time.deltaTime * speed, 0);
          
         }
         else if (Input.GetKey(KeyCode.DownArrow))
         {
-            //transform.Translate(0, -1 * Time.deltaTime * speed, 0);
             transform.position -= transform.forward * Time.deltaTime * speed;
-	    // float distance = (go2.transform.position - go1.transform.position).magnitude;
-        }
 
+        }
+	
+	// Left and Right Arrow change the speed of needle movement
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             if (speed > 0)
@@ -64,72 +65,72 @@ public class NeedleControl : MonoBehaviour
             speed+=0.1f;
         }
 
-        // change camera
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            SwitchCamera();
-        }
-
+	/* D and A keys allow angle movement towards left and right 
+           rotation code obtained from StackOverflow
+	*/
         if (Input.GetKey(KeyCode.D)) // rightward angle
         {
             transform.RotateAround(customPivot.position, Vector3.up, speed * Time.deltaTime);
 
-	    // code obtained from StackOverflow
-
 	 }
 
-	    else if (Input.GetKey(KeyCode.A)) // leftward angle
+	else if (Input.GetKey(KeyCode.A)) // leftward angle
         {
-
             transform.RotateAround(customPivot.position, Vector3.down, speed * Time.deltaTime);
 	}
+	// add time each time you update
 	currTime += Time.deltaTime;
+	// when time is greater than maxTime, check to see if sound should be played 
 	if (currTime > maxTime) 
 	{
 		currTime = 0;
-	if((transform.rotation.y - needleCenter.y) < 0){
-		float err = -1 * Quaternion.Angle(needleCenter, transform.rotation);
-		PlaySound(err);
-	}
-	else {
-		float err = Quaternion.Angle(needleCenter, transform.rotation);
-		PlaySound(err);
-	}
+		if((transform.rotation.y - needleCenter.y) < 0)
+		{
+			float err = -1 * Quaternion.Angle(needleCenter, transform.rotation);
+			PlaySound(err);
+		}
+		else {
+			float err = Quaternion.Angle(needleCenter, transform.rotation);
+			PlaySound(err);
+		}
 	}
 	
     }
+    public void SwitchCamera()
+    {
+	mainCamera.enabled = !(mainCamera.enabled);
+	sideCamera.enabled = !(sideCamera.enabled);
+    }
+
+
+    /*  check to see if sound should be played
+	code changed and obtained from ChucK website, written by 
+        Ge Wang (gewang@cs.princeton.edu)
+	Perry R. Cook (prc@cs.princeton.edu)
+    */
     public void PlaySound(double error)
     {
-	error = (error)/4;
+	error = (error)/4; // normalize error (only looking at range of 4 degrees)
 	GetComponent<ChuckSubInstance>().RunCode(string.Format( @" // our patch
-Shakers shake => JCRev r => dac;
-// set the gain
-.95 => r.gain;
-// set the reverb mix
-.025 => r.mix;
+	Shakers shake => JCRev r => dac;
+	// set the gain
+	.95 => r.gain;
+	// set the reverb mix
+	.025 => r.mix;
 
-// our main loop
+	// our main loop
 
-    // frequency..
-    // note: Math.randomf() returns value between 0 and 1
-    <<< {0} >>>;
+    // add noises as threshold increases 
     if( {0} < 0.0000 || {0} > 0.0000 )
     {{
-        //Math.random2( 0, 22 ) => shake.which;
-        //Std.mtof( Math.random2f( 0.0, 128.0 ) ) => shake.freq;
-        //Math.random2f( 0, 128 ) => shake.objects;
         2 => shake.which;
         50 => shake.freq;
         1 => shake.objects;
 	100 => shake.energy;
 	8 => shake.preset;
-        <<< shake.which(), shake.freq(), shake.objects() >>>;
 	
     }}
-    <<< {0} >>>;
     // shake it!
-    //Math.random2f( 0.8, 1.3 ) => shake.noteOn;
-    // note: Math.randomf() returns value between 0 and 1
     if( {0} < -0.05 || {0} > 0.05)
     {{ 
 	300::ms => now; 
@@ -175,17 +176,11 @@ Shakers shake => JCRev r => dac;
 	10 => shake.preset; // wrench
 
     }}
-
-    
-        //else if( Math.randomf() > .05 )
-    //{{ .125::second => now; }}
-    //else 
-    //{{
-    if( {0} < 0 || {0} > 0)
+    // code to pick and change direction 
+    if( {0} < -1.2 || {0} > 1.2)
     {{
         1 => int i => int pick_dir;
         // how many times
-        //20 * {0} => float pick;
 	3 => int pick;
         0.2 => float pluck;
         0.4 / pick => float inc;
@@ -193,23 +188,15 @@ Shakers shake => JCRev r => dac;
         for( ; i < pick; i++ )
         {{
             75::ms => now;
-            //Math.random2f(.2,.3) + i*inc => pluck;
 	    0.25 + i*inc => pluck;
             pluck + -.2 * pick_dir => shake.noteOn;
             // simulate pluck direction
             !pick_dir => pick_dir;
         }}
     }}
-        // let time pass for final shake
-        //75::ms => now;
-    /*}}*/", error) );
+", error) );
     }
 
-    public void SwitchCamera()
-    {
-	mainCamera.enabled = !(mainCamera.enabled);
-	sideCamera.enabled = !(sideCamera.enabled);
-    }
 
     void OnTriggerEnter(Collider other) // recognize collisions
     {
@@ -221,15 +208,6 @@ Shakers shake => JCRev r => dac;
         }
     }
 
-/*    
-    void OnCollisionEnter( Collision collision )
-    {
-        if (collision.gameObject.CompareTag("Obstacle"))
-        {
-            soundBitty.Play();
-	}
-    }
-*/
 
 }
 public static class ExtendingVector3
