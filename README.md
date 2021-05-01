@@ -13,7 +13,7 @@ Additionally, to perform the sonification, the ChucK programming language was us
 Finally to put the rotation and perform sonification, we wrote a script called NeedleControl to control the 41G Injection Needle.
 
 ## Functions in NeedleControl Script
-
+### more detailed explanations of the functions are within the code documentation!
 void Start(): initializes all elements for beginning of the game at play
 
 void Update(): runs every frame and updates the needle movement as well as the timer
